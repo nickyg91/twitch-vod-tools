@@ -10,6 +10,7 @@
           </v-card-text>
           <v-card-actions class="justify-center">
             <v-btn
+              @click="onAuthorizeClick"
               x-large
               large
               color="purple darken-4"
@@ -29,5 +30,11 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 @Component
-export default class Login extends Vue {}
+export default class Login extends Vue {
+  onAuthorizeClick = () => {
+    const twitchConfig = this.$store.getters.getTwitchSettings;
+    console.log(this.$store.state.getTwitchSettings);
+    window.location.href = `https://id.twitch.tv/oauth2/authorize?client_id=${twitchConfig.clientId}&redirect_uri=${twitchConfig.redirectUrl}&response_type=token&scope=clips:edit channel:manage:videos`;
+  };
+}
 </script>

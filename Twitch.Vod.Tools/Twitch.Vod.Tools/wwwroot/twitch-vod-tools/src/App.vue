@@ -43,11 +43,13 @@
 /* eslint-disable vue/no-unused-components */
 import Vue from "vue";
 import Login from "@/views/Login.vue";
+import Vods from "@/views/Vods.vue";
 export default Vue.extend({
   name: "App",
 
   components: {
-    Login
+    Login,
+    Vods
   },
 
   data: () => ({

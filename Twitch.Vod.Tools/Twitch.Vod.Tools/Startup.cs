@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,6 +12,7 @@ namespace Twitch.Vod.Tools
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             var builder = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
                 .SetBasePath("/opt/appsettings/twitch-vod-tools")
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables();
@@ -25,8 +24,10 @@ namespace Twitch.Vod.Tools
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var section = Configuration.GetSection("TwitchSettings");
-            services.Configure<TwitchConfigurationSection>(section);
+            services.AddOptions();
+            var unTypedSection = Configuration.GetSection("TwitchSettings");
+            var section = Configuration.GetSection("TwitchSettings").Get<TwitchConfigurationSection>();
+            services.Configure<TwitchConfigurationSection>(Configuration.GetSection("TwitchSettings"));
             services.AddControllers();
             services.AddSpaStaticFiles(options =>
             {
@@ -46,6 +47,10 @@ namespace Twitch.Vod.Tools
 
             app.UseRouting();
             app.UseAuthorization();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
             app.UseSpa(spa =>
@@ -55,10 +60,6 @@ namespace Twitch.Vod.Tools
                 {
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:8080/");
                 }
-            });
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
             });
         }
     }

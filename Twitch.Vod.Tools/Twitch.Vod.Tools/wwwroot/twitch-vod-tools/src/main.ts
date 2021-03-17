@@ -3,21 +3,23 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import vuetify from "./plugins/vuetify";
-import axios, { AxiosInstance } from "axios";
+import axios from "axios";
 import { LoginService } from "./services/login.service";
+import { TwitchConfig } from "./models/twitch-config.model";
 
 Vue.config.productionTip = false;
+const httpClient = axios.create({});
 
-const httpClient = axios.create({
-  headers: {
-    Authorization: `OAuth ${store.state.accessToken}`
-  }
-});
-
-Vue.prototype.loginService = new LoginService(httpClient);
+Vue.prototype.$http = httpClient;
+Vue.prototype.loginService = new LoginService(Vue.prototype.$http);
 new Vue({
   router,
   store,
   vuetify,
-  render: (h) => h(App)
+  render: (h) => h(App),
+  beforeCreate: () => {
+    axios.get<TwitchConfig>("/api/authentication/config").then((result) => {
+      store.dispatch("setTwitchSettings", result.data);
+    });
+  }
 }).$mount("#app");
