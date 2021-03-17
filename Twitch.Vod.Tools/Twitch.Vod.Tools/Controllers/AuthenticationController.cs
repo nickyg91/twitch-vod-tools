@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Twitch.Vod.Tools.Configuration;
+using Twitch.Vod.Services.Configuration;
 
 namespace Twitch.Vod.Tools.Controllers
 {
