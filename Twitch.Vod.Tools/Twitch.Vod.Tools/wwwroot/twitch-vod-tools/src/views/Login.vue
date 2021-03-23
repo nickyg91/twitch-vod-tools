@@ -33,7 +33,6 @@ import Component from "vue-class-component";
 export default class Login extends Vue {
   onAuthorizeClick = () => {
     const twitchConfig = this.$store.getters.getTwitchSettings;
-    console.log(this.$store.state.getTwitchSettings);
     window.location.href = `https://id.twitch.tv/oauth2/authorize?client_id=${twitchConfig.clientId}&redirect_uri=${twitchConfig.redirectUrl}&response_type=token&scope=clips:edit channel:manage:videos`;
   };
 }

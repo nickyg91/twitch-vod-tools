@@ -11,11 +11,11 @@ namespace Twitch.Vod.Services.Implementations
 {
     public abstract class TwitchServiceBase
     {
-        private readonly TwitchConfigurationSection _twitchConfig;
+        protected readonly TwitchConfigurationSection TwitchConfig;
         private Token _token;
         protected TwitchServiceBase(TwitchConfigurationSection config)
         {
-            _twitchConfig = config;
+            TwitchConfig = config;
         }
 
         protected async Task<T> CallTwitchApi<T>(string url, object jsonPayload, HttpVerb httpVerb, string userToken)
@@ -30,9 +30,8 @@ namespace Twitch.Vod.Services.Implementations
                 await GetTokenByRefreshToken();
             }
             using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("client-id", _twitchConfig.ClientId);
+            httpClient.DefaultRequestHeaders.Add("client-id", TwitchConfig.ClientId);
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token.AccessToken);
-            //meed to check for pagination key if any
             HttpResponseMessage response = null;
 
             switch (httpVerb)
@@ -73,7 +72,7 @@ namespace Twitch.Vod.Services.Implementations
         private async Task GetAccessToken(string userToken)
         {
             using var httpClient = new HttpClient();
-            var url = $"{_twitchConfig.RedirectUrl}?client_id={_twitchConfig.ClientId}&client_secret={_twitchConfig.ClientSecret}&code={userToken}&grant_type=authorization_code&redirect_uri={_twitchConfig.RedirectUrl}";
+            var url = $"{TwitchConfig.RedirectUrl}?client_id={TwitchConfig.ClientId}&client_secret={TwitchConfig.ClientSecret}&code={userToken}&grant_type=authorization_code&redirect_uri={TwitchConfig.RedirectUrl}";
             var response = await httpClient.PostAsync(url, new StringContent(""));
             var content = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode) throw new Exception(content);
@@ -83,7 +82,7 @@ namespace Twitch.Vod.Services.Implementations
         private async Task GetTokenByRefreshToken()
         {
             using var httpClient = new HttpClient();
-            var url = $"{_twitchConfig.RedirectUrl}?client_id={_twitchConfig.ClientId}&client_secret={_twitchConfig.ClientSecret}&refresh_token={_token.RefreshToken}&grant_type=refresh&redirect_uri={_twitchConfig.RedirectUrl}";
+            var url = $"{TwitchConfig.RedirectUrl}?client_id={TwitchConfig.ClientId}&client_secret={TwitchConfig.ClientSecret}&refresh_token={_token.RefreshToken}&grant_type=refresh&redirect_uri={TwitchConfig.RedirectUrl}";
             var response = await httpClient.PostAsync(url, new StringContent(""));
             var content = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode) throw new Exception(content);

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Twitch.Vod.Services.Configuration;
 using Twitch.Vod.Services.Interfaces;
+using Twitch.Vod.Services.Models;
 using Twitch.Vod.Services.Models.Twitch;
 
 namespace Twitch.Vod.Services.Implementations
@@ -11,14 +12,11 @@ namespace Twitch.Vod.Services.Implementations
         {
         }
 
-        public Task<TwitchVodContainer> GetTwitchVods()
+        public Task<TwitchVodContainer> GetTwitchVods(string userId, string userToken, string cursor)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<TwitchVodContainer> GetTwitchVodsWithPagination(string cursor)
-        {
-            throw new System.NotImplementedException();
+            var url = string.IsNullOrEmpty(cursor) ? $"https://api.twitch.tv/helix/videos?user_id={userId}" : "https://api.twitch.tv/helix/videos?user_id={userId}?after={cursor}";
+            return CallTwitchApi<TwitchVodContainer>(url, null,
+                HttpVerb.GET, userToken);
         }
     }
 }

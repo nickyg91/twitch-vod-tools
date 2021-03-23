@@ -14,13 +14,6 @@ namespace Twitch.Vod.Tools.Controllers
             _twitchConfig = twitchConfiguration.Value;
         }
 
-        [HttpGet("login")]
-        public IActionResult Login()
-        {
-            var redirectUrl = _twitchConfig.RedirectUrl;
-            return Ok();
-        }
-
         [HttpGet("config")]
         public IActionResult Config()
         {

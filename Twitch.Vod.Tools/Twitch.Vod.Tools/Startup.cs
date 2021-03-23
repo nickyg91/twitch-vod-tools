@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Twitch.Vod.Services.Configuration;
+using Twitch.Vod.Services.Implementations;
+using Twitch.Vod.Services.Interfaces;
 
 namespace Twitch.Vod.Tools
 {
@@ -25,13 +27,21 @@ namespace Twitch.Vod.Tools
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
-            var unTypedSection = Configuration.GetSection("TwitchSettings");
             var section = Configuration.GetSection("TwitchSettings").Get<TwitchConfigurationSection>();
             services.Configure<TwitchConfigurationSection>(Configuration.GetSection("TwitchSettings"));
+            var twitchBaseApi = new TwitchVodService(section);
+
+            services.AddSingleton<ITwitchVodService>(twitchBaseApi);
             services.AddControllers();
             services.AddSpaStaticFiles(options =>
             {
                 options.RootPath = "wwwroot/twitch-vod-tools/dist";
+            });
+            services.AddAuthentication().AddTwitch(options =>
+            {
+                options.ClientId = section.ClientId;
+                options.ClientSecret = section.ClientSecret;
+                options.ReturnUrlParameter = section.RedirectUrl;
             });
         }
 
@@ -46,6 +56,7 @@ namespace Twitch.Vod.Tools
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
