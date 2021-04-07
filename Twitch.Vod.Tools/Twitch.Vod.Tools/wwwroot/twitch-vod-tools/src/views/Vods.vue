@@ -11,5 +11,17 @@
 import { Component } from "vue-property-decorator";
 import Vue from "vue";
 @Component
-export default class Vods extends Vue {}
+export default class Vods extends Vue {
+  mounted() {
+    console.log(this.$http);
+    this.$loginService.getUser().then(
+      (x) => {
+        this.$store.dispatch("setTwitchUser", x.data);
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
+  }
+}
 </script>

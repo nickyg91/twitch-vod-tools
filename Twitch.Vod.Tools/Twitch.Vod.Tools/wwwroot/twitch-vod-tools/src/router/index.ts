@@ -35,12 +35,15 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   if (to.fullPath.indexOf("access_token") > -1) {
     const splitHash = to.fullPath.split("&");
-    splitHash.map((part) => part.replace(/#\//, ""));
-    splitHash.forEach((result) => {
+    splitHash.map(part => part.replace(/#\//, ""));
+    splitHash.forEach(result => {
       const parts = result.split("=");
       console.log(parts);
       if (parts[0].indexOf("access_token") > -1) {
         store.dispatch("setAccessToken", parts[1]);
+        router.app.$http.defaults.headers = {
+          Authorization: `Bearer ${parts[1]}`
+        };
         next({ name: "Vods" });
       }
     });

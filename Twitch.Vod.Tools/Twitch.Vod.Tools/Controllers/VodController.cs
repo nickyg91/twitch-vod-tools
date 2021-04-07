@@ -15,11 +15,12 @@ namespace Twitch.Vod.Tools.Controllers
             _vodService = vodService;
         }
 
-        [HttpGet("{userId:string}")]
+        [HttpGet("{userId}")]
         public async Task<IActionResult> GetVods(string userId, string pagination = null)
         {
             var token = HttpContext.Request.Headers["Authorization"];
             var vods = await _vodService.GetTwitchVods(userId, token, pagination);
+            
             return Ok(vods);
         }
     }

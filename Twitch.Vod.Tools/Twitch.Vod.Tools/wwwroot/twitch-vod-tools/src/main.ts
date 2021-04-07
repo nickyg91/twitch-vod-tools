@@ -11,14 +11,14 @@ Vue.config.productionTip = false;
 const httpClient = axios.create({});
 
 Vue.prototype.$http = httpClient;
-Vue.prototype.loginService = new LoginService(Vue.prototype.$http);
+Vue.prototype.$loginService = new LoginService(Vue.prototype.$http);
 new Vue({
   router,
   store,
   vuetify,
-  render: (h) => h(App),
+  render: h => h(App),
   beforeCreate: () => {
-    axios.get<TwitchConfig>("/api/authentication/config").then((result) => {
+    axios.get<TwitchConfig>("/api/authentication/config").then(result => {
       store.dispatch("setTwitchSettings", result.data);
     });
   }

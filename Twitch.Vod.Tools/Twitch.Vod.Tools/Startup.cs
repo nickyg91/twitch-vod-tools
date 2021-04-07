@@ -29,9 +29,10 @@ namespace Twitch.Vod.Tools
             services.AddOptions();
             var section = Configuration.GetSection("TwitchSettings").Get<TwitchConfigurationSection>();
             services.Configure<TwitchConfigurationSection>(Configuration.GetSection("TwitchSettings"));
-            var twitchBaseApi = new TwitchVodService(section);
-
-            services.AddSingleton<ITwitchVodService>(twitchBaseApi);
+            var vodService = new TwitchVodService(section);
+            var userService = new TwitchUserService(section);
+            services.AddSingleton<ITwitchUserService>(userService);
+            services.AddSingleton<ITwitchVodService>(vodService);
             services.AddControllers();
             services.AddSpaStaticFiles(options =>
             {
