@@ -1,3 +1,5 @@
+using AspNet.Security.OAuth.Twitch;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -27,23 +29,30 @@ namespace Twitch.Vod.Tools
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
+            services.AddRouting();
             var section = Configuration.GetSection("TwitchSettings").Get<TwitchConfigurationSection>();
             services.Configure<TwitchConfigurationSection>(Configuration.GetSection("TwitchSettings"));
             var vodService = new TwitchVodService(section);
             var userService = new TwitchUserService(section);
             services.AddSingleton<ITwitchUserService>(userService);
             services.AddSingleton<ITwitchVodService>(vodService);
+            //services.AddAuthentication(options =>
+            //    {
+            //        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //        options.
+            //    })
+            //    .AddTwitch(options =>
+            //    {
+            //        options.ClientId = section.ClientId;
+            //        options.ClientSecret = section.ClientSecret;
+            //        options.ReturnUrlParameter = section.RedirectUrl;
+            //    });
             services.AddControllers();
             services.AddSpaStaticFiles(options =>
             {
                 options.RootPath = "wwwroot/twitch-vod-tools/dist";
             });
-            services.AddAuthentication().AddTwitch(options =>
-            {
-                options.ClientId = section.ClientId;
-                options.ClientSecret = section.ClientSecret;
-                options.ReturnUrlParameter = section.RedirectUrl;
-            });
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,10 +64,9 @@ namespace Twitch.Vod.Tools
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
+            //app.UseAuthentication();
+            //app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

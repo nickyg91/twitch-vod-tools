@@ -31,7 +31,7 @@ namespace Twitch.Vod.Tools.Controllers
                 });
         }
 
-        [HttpGet("user"), Authorize]
+        [HttpGet("user")]
         public async Task<IActionResult> GetUser()
         {
             var token = HttpContext.Request.Headers["Authorization"];

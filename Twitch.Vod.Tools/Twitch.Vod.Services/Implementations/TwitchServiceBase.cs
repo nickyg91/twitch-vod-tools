@@ -73,7 +73,7 @@ namespace Twitch.Vod.Services.Implementations
         {
             using var httpClient = new HttpClient();
             var url = $"{TwitchConfig.RedirectUrl}?client_id={TwitchConfig.ClientId}&client_secret={TwitchConfig.ClientSecret}&code={userToken}&grant_type=authorization_code&redirect_uri={TwitchConfig.RedirectUrl}";
-            var response = await httpClient.PostAsync(url, new StringContent(""));
+            var response = await httpClient.GetAsync(url);
             var content = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode) throw new Exception(content);
             _token = JsonSerializer.Deserialize<Token>(content);
@@ -83,7 +83,7 @@ namespace Twitch.Vod.Services.Implementations
         {
             using var httpClient = new HttpClient();
             var url = $"{TwitchConfig.RedirectUrl}?client_id={TwitchConfig.ClientId}&client_secret={TwitchConfig.ClientSecret}&refresh_token={_token.RefreshToken}&grant_type=refresh&redirect_uri={TwitchConfig.RedirectUrl}";
-            var response = await httpClient.PostAsync(url, new StringContent(""));
+            var response = await httpClient.GetAsync(url);
             var content = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode) throw new Exception(content);
             _token = JsonSerializer.Deserialize<Token>(content);

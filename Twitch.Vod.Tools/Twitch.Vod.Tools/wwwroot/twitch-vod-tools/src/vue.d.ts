@@ -8,9 +8,3 @@ declare module "vue/types/vue" {
     $loginService: LoginService;
   }
 }
-// declare module "vue/types/options" {
-//   interface ComponentOptions<V extends Vue> {
-//     $http: AxiosInstance;
-//     $loginService: LoginService;
-//   }
-// }

@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Twitch.Vod.Services.Interfaces;
 
 namespace Twitch.Vod.Tools.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController, Authorize]
+    [ApiController]
     public class VodController : ControllerBase
     {
         private readonly ITwitchVodService _vodService;
