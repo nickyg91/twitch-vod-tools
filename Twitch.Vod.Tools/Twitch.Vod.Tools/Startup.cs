@@ -36,17 +36,17 @@ namespace Twitch.Vod.Tools
             var userService = new TwitchUserService(section);
             services.AddSingleton<ITwitchUserService>(userService);
             services.AddSingleton<ITwitchVodService>(vodService);
-            //services.AddAuthentication(options =>
-            //    {
-            //        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //        options.
-            //    })
-            //    .AddTwitch(options =>
-            //    {
-            //        options.ClientId = section.ClientId;
-            //        options.ClientSecret = section.ClientSecret;
-            //        options.ReturnUrlParameter = section.RedirectUrl;
-            //    });
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = "Bearer";
+                })
+                .AddTwitch(options =>
+                {
+                    options.ClientId = section.ClientId;
+                    options.ClientSecret = section.ClientSecret;
+                    options.ReturnUrlParameter = section.RedirectUrl;
+                    options.AuthorizationEndpoint = "https://id.twitch.tv/oauth2/validate";
+                });
             services.AddControllers();
             services.AddSpaStaticFiles(options =>
             {

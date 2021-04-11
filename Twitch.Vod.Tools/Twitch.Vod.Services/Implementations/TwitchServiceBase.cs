@@ -71,9 +71,10 @@ namespace Twitch.Vod.Services.Implementations
 
         private async Task GetAccessToken(string userToken)
         {
+            var parsedToken = userToken.Split(" ")[1];
             using var httpClient = new HttpClient();
-            var url = $"{TwitchConfig.RedirectUrl}?client_id={TwitchConfig.ClientId}&client_secret={TwitchConfig.ClientSecret}&code={userToken}&grant_type=authorization_code&redirect_uri={TwitchConfig.RedirectUrl}";
-            var response = await httpClient.GetAsync(url);
+            var url = $"{TwitchConfig.TwitchTokenBaseUrl}?client_id={TwitchConfig.ClientId}&client_secret={TwitchConfig.ClientSecret}&code={parsedToken}&grant_type=authorization_code&redirect_uri={TwitchConfig.RedirectUrl}";
+            var response = await httpClient.PostAsync(url, new StringContent(""));
             var content = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode) throw new Exception(content);
             _token = JsonSerializer.Deserialize<Token>(content);
@@ -82,8 +83,8 @@ namespace Twitch.Vod.Services.Implementations
         private async Task GetTokenByRefreshToken()
         {
             using var httpClient = new HttpClient();
-            var url = $"{TwitchConfig.RedirectUrl}?client_id={TwitchConfig.ClientId}&client_secret={TwitchConfig.ClientSecret}&refresh_token={_token.RefreshToken}&grant_type=refresh&redirect_uri={TwitchConfig.RedirectUrl}";
-            var response = await httpClient.GetAsync(url);
+            var url = $"{TwitchConfig.TwitchTokenBaseUrl}?client_id={TwitchConfig.ClientId}&client_secret={TwitchConfig.ClientSecret}&refresh_token={_token.RefreshToken}&grant_type=refresh&redirect_uri={TwitchConfig.RedirectUrl}";
+            var response = await httpClient.PostAsync(url, new StringContent(""));
             var content = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode) throw new Exception(content);
             _token = JsonSerializer.Deserialize<Token>(content);

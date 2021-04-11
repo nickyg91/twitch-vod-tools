@@ -20,6 +20,7 @@
               <v-icon left color="white">mdi-account</v-icon>
               Authorize
             </v-btn>
+            {{ url }}
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -29,11 +30,19 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import axios from "axios";
+import { TwitchConfig } from "../models/twitch-config.model";
 @Component
 export default class Login extends Vue {
+  url = "";
+  mounted() {
+    axios.get<TwitchConfig>("/api/authentication/config").then((result) => {
+      this.$store.dispatch("setTwitchSettings", result.data);
+      this.url = `https://id.twitch.tv/oauth2/authorize?&response_type=code&client_id=${result.data.clientId}&redirect_uri=${result.data.redirectUrl}&scope=user_read clips:edit channel:manage:videos`;
+    });
+  }
   onAuthorizeClick = () => {
-    const twitchConfig = this.$store.getters.getTwitchSettings;
-    window.location.href = `https://id.twitch.tv/oauth2/authorize?client_id=${twitchConfig.clientId}&redirect_uri=${twitchConfig.redirectUrl}&response_type=token&scope=user_read clips:edit channel:manage:videos`;
+    window.location.href = this.url;
   };
 }
 </script>

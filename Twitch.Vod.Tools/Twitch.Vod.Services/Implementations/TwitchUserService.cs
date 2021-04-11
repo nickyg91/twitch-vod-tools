@@ -16,7 +16,7 @@ namespace Twitch.Vod.Services.Implementations
 
         public async Task<TwitchUser> GetTwitchUser(string userToken)
         {
-            return await CallTwitchApi<TwitchUser>("https://api.twitch.tv/kraken/user", null, HttpVerb.GET, userToken);
+            return await CallTwitchApi<TwitchUser>("https://api.twitch.tv/helix/user", null, HttpVerb.GET, userToken);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Twitch.Vod.Tools.Controllers
         [HttpGet("user")]
         public async Task<IActionResult> GetUser()
         {
-            var token = HttpContext.Request.Headers["Authorization"];
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1];
             var user = await _userService.GetTwitchUser(token);
             var userDto = new TwitchUserDto
             {
