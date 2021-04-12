@@ -6,6 +6,8 @@ namespace Twitch.Vod.Services.Models
 {
     public class Token
     {
+        private readonly DateTime _dateCreated = DateTime.UtcNow;
+
         [JsonPropertyName("access_token")]
         public string AccessToken { get; set; }
         [JsonPropertyName("refresh_token")]
@@ -17,13 +19,8 @@ namespace Twitch.Vod.Services.Models
         [JsonPropertyName("token_type")]
         public string TokenType { get; set; }
 
-        public bool IsExpired
-        {
-            get
-            {
-                var expirationDate = TimeSpan.FromSeconds(ExpiresIn);
-                return DateTime.Now.TimeOfDay > expirationDate;
-            }
-        }
+        public DateTime ExpirationDate => _dateCreated.AddSeconds(ExpiresIn);
+
+        public bool IsExpired => DateTime.UtcNow > ExpirationDate;
     }
 }

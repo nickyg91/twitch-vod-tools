@@ -1,7 +1,7 @@
 import { TwitchConfig } from "@/models/twitch-config.model";
+import { TwitchUser } from "@/models/twitch-user.model";
 import Vue from "vue";
 import Vuex from "vuex";
-import { TwitchUser } from "../services/twitch-user.model";
 
 Vue.use(Vuex);
 
@@ -23,7 +23,7 @@ export default new Vuex.Store({
     }
   },
   getters: {
-    getAccessToken: state => {
+    getAccessToken: (state) => {
       return state.accessToken;
     },
     getTwitchSettings: (state): TwitchConfig => {

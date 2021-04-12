@@ -6,12 +6,15 @@ namespace Twitch.Vod.Services.Models.Twitch
 {
     public class TwitchVod : ITwitchVod
     {
-        public long Id { get; set; }
+        [JsonPropertyName("id")]
+        public string Id { get; set; }
         [JsonPropertyName("user_id")]
-        public long UserId { get; set; }
+        public string UserId { get; set; }
         [JsonPropertyName("user_name")]
         public string Username { get; set; }
+        [JsonPropertyName("description")]
         public string Description { get; set; }
+        [JsonPropertyName("title")]
         public string Title { get; set; }
         [JsonPropertyName("created_at")]
         public DateTime CreatedAt { get; set; }
@@ -21,8 +24,10 @@ namespace Twitch.Vod.Services.Models.Twitch
         [JsonPropertyName("thumbnail_url")]
         public string ThumbnailUrl { get; set; }
         [JsonPropertyName("view_count")]
-        public int ViewCount { get; set; }
+        public long ViewCount { get; set; }
+        [JsonPropertyName("viewable")]
         public string Viewable { get; set; }
+        [JsonPropertyName("duration")]
         public string Duration { get; set; }
     }
 }

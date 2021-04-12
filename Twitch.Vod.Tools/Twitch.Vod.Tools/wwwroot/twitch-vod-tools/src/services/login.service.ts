@@ -1,5 +1,5 @@
+import { TwitchUser } from "@/models/twitch-user.model";
 import { AxiosInstance, AxiosResponse } from "axios";
-import { TwitchUser } from "./twitch-user.model";
 
 export class LoginService {
   private readonly httpClient: AxiosInstance;

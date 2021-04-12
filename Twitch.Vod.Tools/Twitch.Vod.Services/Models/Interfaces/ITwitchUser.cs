@@ -2,7 +2,9 @@
 {
     public interface ITwitchUser
     {
-        int Id { get; set; }
+        string Id { get; set; }
         string DisplayName { get; set; }
+        string ProfileImageUrl { get; set; }
+        long ViewCount { get; set; }
     }
 }

@@ -1,59 +1,43 @@
 <template>
-  <v-app>
-    <v-app-bar app color="purple darken-4" dark>
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
-
-    <v-main>
-      <router-view></router-view>
-    </v-main>
-  </v-app>
+  <div>
+    <top-nav></top-nav>
+    <router-view
+      @showLoading="showLoading"
+      @hideLoading="hideLoading"
+    ></router-view>
+    <b-loading v-model="isLoading" :can-cancel="false"></b-loading>
+  </div>
 </template>
 
 <script lang="ts">
-/* eslint-disable vue/no-unused-components */
 import Vue from "vue";
-import Login from "@/views/Login.vue";
-import Vods from "@/views/Vods.vue";
+import TopNav from "@/views/TopNav.vue";
+import axios from "axios";
+import { TwitchConfig } from "./models/twitch-config.model";
+import store from "./store";
 export default Vue.extend({
   name: "App",
-
   components: {
-    Login,
-    Vods
+    TopNav
   },
-
-  data: () => ({
-    //
-  })
+  data() {
+    return {
+      isLoading: false
+    };
+  },
+  methods: {
+    showLoading() {
+      this.isLoading = true;
+    },
+    hideLoading() {
+      this.isLoading = false;
+    }
+  },
+  store: store,
+  beforeCreate: () => {
+    axios.get<TwitchConfig>("/api/authentication/config").then((result) => {
+      store.dispatch("setTwitchSettings", result.data);
+    });
+  }
 });
 </script>

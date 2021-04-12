@@ -1,5 +1,6 @@
 using AspNet.Security.OAuth.Twitch;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -29,30 +30,33 @@ namespace Twitch.Vod.Tools
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
-            services.AddRouting();
             var section = Configuration.GetSection("TwitchSettings").Get<TwitchConfigurationSection>();
-            services.Configure<TwitchConfigurationSection>(Configuration.GetSection("TwitchSettings"));
             var vodService = new TwitchVodService(section);
             var userService = new TwitchUserService(section);
             services.AddSingleton<ITwitchUserService>(userService);
             services.AddSingleton<ITwitchVodService>(vodService);
-            services.AddAuthentication(options =>
+            services.Configure<TwitchConfigurationSection>(Configuration.GetSection("TwitchSettings"));
+            services.AddControllers();
+            services.AddAuthentication(config =>
                 {
-                    options.DefaultScheme = "Bearer";
+                    config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    config.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                    config.DefaultChallengeScheme = TwitchAuthenticationDefaults.AuthenticationScheme;
                 })
                 .AddTwitch(options =>
                 {
                     options.ClientId = section.ClientId;
                     options.ClientSecret = section.ClientSecret;
                     options.ReturnUrlParameter = section.RedirectUrl;
-                    options.AuthorizationEndpoint = "https://id.twitch.tv/oauth2/validate";
+                    options.Scope.Add("user:read:email");
+                    options.Scope.Add("clips:edit");
+                    options.Scope.Add("channel:manage:videos");
+                    options.SaveTokens = true;
                 });
-            services.AddControllers();
             services.AddSpaStaticFiles(options =>
             {
                 options.RootPath = "wwwroot/twitch-vod-tools/dist";
             });
-            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,8 +69,8 @@ namespace Twitch.Vod.Tools
 
             app.UseHttpsRedirection();
             app.UseRouting();
-            //app.UseAuthentication();
-            //app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

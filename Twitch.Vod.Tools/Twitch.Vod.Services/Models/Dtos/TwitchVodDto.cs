@@ -5,8 +5,26 @@ namespace Twitch.Vod.Services.Models.Dtos
 {
     public class TwitchVodDto : ITwitchVod
     {
-        public long Id { get; set; }
-        public long UserId { get; set; }
+        public TwitchVodDto() { }
+
+        public TwitchVodDto(ITwitchVod vod)
+        {
+            Id = vod.Id;
+            UserId = vod.UserId;
+            Username = vod.Username;
+            Description = vod.Description;
+            Title = vod.Title;
+            CreatedAt = vod.CreatedAt;
+            PublishedAt = vod.PublishedAt;
+            Url = vod.Url;
+            ThumbnailUrl = vod.ThumbnailUrl.Replace("%{width}", "460").Replace("%{height}", "460");
+            ViewCount = vod.ViewCount;
+            Viewable = vod.Viewable;
+            Duration = vod.Duration;
+        }
+
+        public string Id { get; set; }
+        public string UserId { get; set; }
         public string Username { get; set; }
         public string Description { get; set; }
         public string Title { get; set; }
@@ -14,7 +32,7 @@ namespace Twitch.Vod.Services.Models.Dtos
         public DateTime PublishedAt { get; set; }
         public string Url { get; set; }
         public string ThumbnailUrl { get; set; }
-        public int ViewCount { get; set; }
+        public long ViewCount { get; set; }
         public string Viewable { get; set; }
         public string Duration { get; set; }
     }

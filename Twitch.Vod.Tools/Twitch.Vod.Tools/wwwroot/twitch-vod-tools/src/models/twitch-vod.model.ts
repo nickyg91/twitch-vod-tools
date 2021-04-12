@@ -7,4 +7,5 @@ export class TwitchVod {
   url?: string;
   viewCount?: number;
   duration?: string;
+  thumbnailUrl?: string;
 }

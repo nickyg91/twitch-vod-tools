@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -34,12 +36,14 @@ namespace Twitch.Vod.Tools.Controllers
         [HttpGet("user")]
         public async Task<IActionResult> GetUser()
         {
-            var token = HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1];
+            var token = HttpContext.Request.Headers["x-user-access-token"];
             var user = await _userService.GetTwitchUser(token);
             var userDto = new TwitchUserDto
             {
-                DisplayName = user.DisplayName,
-                Id = user.Id
+                DisplayName = user.Data.FirstOrDefault()?.DisplayName,
+                Id = user.Data.FirstOrDefault()?.Id,
+                ProfileImageUrl = user.Data.FirstOrDefault()?.ProfileImageUrl,
+                ViewCount = user.Data.FirstOrDefault()?.ViewCount ?? 0
             };
             return Ok(userDto);
         }

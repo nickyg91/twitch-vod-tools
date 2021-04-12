@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Twitch.Vod.Services.Configuration;
 using Twitch.Vod.Services.Interfaces;
 using Twitch.Vod.Services.Models;
@@ -12,10 +13,10 @@ namespace Twitch.Vod.Services.Implementations
         {
         }
 
-        public Task<TwitchVodContainer> GetTwitchVods(string userId, string userToken, string cursor)
+        public Task<TwitchResponse<List<TwitchVod>>> GetTwitchVods(string userId, string userToken, string cursor)
         {
             var url = string.IsNullOrEmpty(cursor) ? $"https://api.twitch.tv/helix/videos?user_id={userId}" : "https://api.twitch.tv/helix/videos?user_id={userId}?after={cursor}";
-            return CallTwitchApi<TwitchVodContainer>(url, null,
+            return CallTwitchApi<TwitchResponse<List<TwitchVod>>>(url, null,
                 HttpVerb.GET, userToken);
         }
     }

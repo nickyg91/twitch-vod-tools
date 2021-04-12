@@ -2,6 +2,6 @@ import { TwitchVod } from "../models/twitch-vod.model";
 import { Pagination } from "./twitch-pagination.model";
 
 export class TwitchVodContainer {
-  data: TwitchVod[] = [];
+  vods: TwitchVod[] = [];
   pagination?: Pagination = undefined;
 }

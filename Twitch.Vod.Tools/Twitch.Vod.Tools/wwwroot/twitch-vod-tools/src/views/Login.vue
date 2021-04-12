@@ -1,48 +1,45 @@
 <template>
-  <v-container fluid>
-    <v-layout align-center justify-center>
-      <v-flex xs12 sm8 md4>
-        <v-card class="elevation-12">
-          <v-card-text centered>
-            <div class="centered text-h5">
-              In order to use this app please allow it to access Twitch!
-            </div>
-          </v-card-text>
-          <v-card-actions class="justify-center">
-            <v-btn
-              @click="onAuthorizeClick"
-              x-large
-              large
-              color="purple darken-4"
-              elevation="2"
-              class="white--text"
-            >
-              <v-icon left color="white">mdi-account</v-icon>
-              Authorize
-            </v-btn>
-            {{ url }}
-          </v-card-actions>
-        </v-card>
-      </v-flex>
-    </v-layout>
-  </v-container>
+  <div v-if="twitchConfig" class="section">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-half">
+          <div class="box">
+            <p class="title is-3 has-text-centered">
+              In order to access this application you must allow it to access
+              twitch!
+            </p>
+            <a :href="this.url" class="is-fullwidth button is-primary">
+              Allow
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 <script lang="ts">
+import { mapState } from "vuex";
 import Vue from "vue";
 import Component from "vue-class-component";
-import axios from "axios";
 import { TwitchConfig } from "../models/twitch-config.model";
-@Component
+import { Watch } from "vue-property-decorator";
+import store from "@/store";
+@Component({
+  store: store,
+  computed: {
+    twitchConfig: mapState({
+      get: "twitchConfig",
+      set: "twitchConfig"
+    })
+  }
+})
 export default class Login extends Vue {
   url = "";
-  mounted() {
-    axios.get<TwitchConfig>("/api/authentication/config").then((result) => {
-      this.$store.dispatch("setTwitchSettings", result.data);
-      this.url = `https://id.twitch.tv/oauth2/authorize?&response_type=code&client_id=${result.data.clientId}&redirect_uri=${result.data.redirectUrl}&scope=user_read clips:edit channel:manage:videos`;
-    });
+  twitchConfig!: TwitchConfig;
+  @Watch("twitchConfig")
+  onTwitchConfigChanged(newValue: TwitchConfig) {
+    this.twitchConfig = newValue;
+    this.url = `https://id.twitch.tv/oauth2/authorize?&response_type=code&client_id=${this.twitchConfig.clientId}&redirect_uri=${this.twitchConfig.redirectUrl}&scope=user_read clips:edit channel:manage:videos`;
   }
-  onAuthorizeClick = () => {
-    window.location.href = this.url;
-  };
 }
 </script>

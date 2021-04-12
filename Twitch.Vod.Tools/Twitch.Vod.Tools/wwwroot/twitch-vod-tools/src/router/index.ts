@@ -6,7 +6,9 @@ import store from "@/store/index";
 
 Vue.use(VueRouter);
 
-const router = new VueRouter({});
+const router = new VueRouter({
+  mode: "history"
+});
 const routes: Array<RouteConfig> = [
   {
     path: "/login",
@@ -19,38 +21,31 @@ const routes: Array<RouteConfig> = [
     component: Vods
   },
   {
-    path: "/about",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue")
-  },
-  {
     path: "/authenticated",
     name: "Authenticated",
     beforeEnter: (to, from, next) => {
-      console.log("in before enter");
-      const code = to.params["code"];
-      store.dispatch("setAccessToken", code);
-      router.app.$http.defaults.headers = {
-        Authorization: `Bearer ${code}`
-      };
-      next({ name: "Vods" });
+      const existingToken = store.getters.getAccessToken;
+      if (!existingToken) {
+        const parsedAccessToken = to.query.code;
+        router.app.$store.dispatch("setAccessToken", parsedAccessToken);
+        router.app.$http.defaults.headers.common[
+          "x-user-access-token"
+        ] = parsedAccessToken;
+        next({ name: "Vods" });
+      } else {
+        next({ name: "Vods" });
+      }
     }
   }
 ];
 
-router.addRoutes(routes);
+routes.forEach((x) => {
+  router.addRoute(x);
+});
 
 router.beforeEach((to, from, next) => {
-  console.log(from);
-  if (to.name === "Authenticated" && to.fullPath.indexOf("code") > -1) {
-    console.log("have the code");
-    next();
-  }
-  if (to.name !== "Login" && !store.state.accessToken) {
+  const existingToken = store.getters.getAccessToken;
+  if (!existingToken && to.name !== "Login" && to.name !== "Authenticated") {
     next({ name: "Login" });
   } else {
     next();
