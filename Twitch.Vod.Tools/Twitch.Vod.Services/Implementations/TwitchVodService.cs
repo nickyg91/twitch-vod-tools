@@ -13,11 +13,11 @@ namespace Twitch.Vod.Services.Implementations
         {
         }
 
-        public Task<TwitchResponse<List<TwitchVod>>> GetTwitchVods(string userId, string userToken, string cursor)
+        public Task<TwitchResponse<List<TwitchVod>>> GetTwitchVods(string userId, string cursor)
         {
-            var url = string.IsNullOrEmpty(cursor) ? $"https://api.twitch.tv/helix/videos?user_id={userId}" : "https://api.twitch.tv/helix/videos?user_id={userId}?after={cursor}";
+            var url = string.IsNullOrEmpty(cursor) ? $"https://api.twitch.tv/helix/videos?user_id={userId}" : $"https://api.twitch.tv/helix/videos?user_id={userId}&after={cursor}";
             return CallTwitchApi<TwitchResponse<List<TwitchVod>>>(url, null,
-                HttpVerb.GET, userToken);
+                HttpVerb.GET);
         }
     }
 }

@@ -6,6 +6,7 @@ namespace Twitch.Vod.Services.Models.Twitch
     {
         [JsonPropertyName("data")]
         public T Data { get; set; }
+        [JsonPropertyName("pagination")]
         public Pagination Pagination { get; set; }
     }
 }

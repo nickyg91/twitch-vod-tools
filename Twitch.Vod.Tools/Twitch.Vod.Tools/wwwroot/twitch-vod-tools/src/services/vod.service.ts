@@ -7,7 +7,13 @@ export class VodService {
     this.httpClient = httpInstance;
   }
 
-  getVods(userId: string): Promise<AxiosResponse<TwitchVodContainer>> {
+  getVods(
+    userId: string,
+    cursor?: string
+  ): Promise<AxiosResponse<TwitchVodContainer>> {
+    if (cursor !== undefined) {
+      return this.httpClient.get(`/api/vod/${userId}?pagination=${cursor}`);
+    }
     return this.httpClient.get(`/api/vod/${userId}`);
   }
 }

@@ -18,11 +18,11 @@ namespace Twitch.Vod.Services.Implementations
             TwitchConfig = config;
         }
 
-        protected async Task<T> CallTwitchApi<T>(string url, object jsonPayload, HttpVerb httpVerb, string userToken)
+        protected async Task<T> CallTwitchApi<T>(string url, object jsonPayload, HttpVerb httpVerb)
         {
             if (_token == null)
             {
-                await GetAccessToken(userToken);
+                await GetAccessToken();
             }
 
             if (_token.IsExpired)
@@ -69,10 +69,10 @@ namespace Twitch.Vod.Services.Implementations
             return JsonSerializer.Deserialize<T>(content);
         }
 
-        private async Task GetAccessToken(string userToken)
+        private async Task GetAccessToken()
         {
             using var httpClient = new HttpClient();
-            var url = $"{TwitchConfig.TwitchTokenBaseUrl}?client_id={TwitchConfig.ClientId}&client_secret={TwitchConfig.ClientSecret}&code={userToken}&grant_type=authorization_code&redirect_uri={TwitchConfig.RedirectUrl}";
+            var url = $"{TwitchConfig.TwitchTokenBaseUrl}?client_id={TwitchConfig.ClientId}&client_secret={TwitchConfig.ClientSecret}&grant_type=client_credentials";
             var response = await httpClient.PostAsync(url, new StringContent(""));
             var content = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode) throw new Exception(content);
@@ -82,7 +82,7 @@ namespace Twitch.Vod.Services.Implementations
         private async Task GetTokenByRefreshToken()
         {
             using var httpClient = new HttpClient();
-            var url = $"{TwitchConfig.TwitchTokenBaseUrl}?client_id={TwitchConfig.ClientId}&client_secret={TwitchConfig.ClientSecret}&refresh_token={_token.RefreshToken}&grant_type=refresh&redirect_uri={TwitchConfig.RedirectUrl}";
+            var url = $"{TwitchConfig.TwitchTokenBaseUrl}?client_id={TwitchConfig.ClientId}&client_secret={TwitchConfig.ClientSecret}&refresh_token={_token.RefreshToken}&grant_type=refresh";
             var response = await httpClient.PostAsync(url, new StringContent(""));
             var content = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode) throw new Exception(content);

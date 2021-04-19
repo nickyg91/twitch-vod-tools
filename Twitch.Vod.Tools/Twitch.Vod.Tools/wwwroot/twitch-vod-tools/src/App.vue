@@ -12,8 +12,6 @@
 <script lang="ts">
 import Vue from "vue";
 import TopNav from "@/views/TopNav.vue";
-import axios from "axios";
-import { TwitchConfig } from "./models/twitch-config.model";
 import store from "./store";
 export default Vue.extend({
   name: "App",
@@ -33,11 +31,6 @@ export default Vue.extend({
       this.isLoading = false;
     }
   },
-  store: store,
-  beforeCreate: () => {
-    axios.get<TwitchConfig>("/api/authentication/config").then((result) => {
-      store.dispatch("setTwitchSettings", result.data);
-    });
-  }
+  store: store
 });
 </script>

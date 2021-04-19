@@ -6,6 +6,6 @@ namespace Twitch.Vod.Services.Interfaces
 {
     public interface ITwitchVodService
     {
-        Task<TwitchResponse<List<TwitchVod>>> GetTwitchVods(string userId, string userToken, string cursor);
+        Task<TwitchResponse<List<TwitchVod>>> GetTwitchVods(string userId, string cursor);
     }
 }

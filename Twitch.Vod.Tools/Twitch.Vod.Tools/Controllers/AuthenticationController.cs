@@ -1,5 +1,7 @@
 ﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using AspNet.Security.OAuth.Twitch;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,19 +35,35 @@ namespace Twitch.Vod.Tools.Controllers
                 });
         }
 
-        [HttpGet("user")]
+        [HttpGet("user"), Authorize]
         public async Task<IActionResult> GetUser()
         {
-            var token = HttpContext.Request.Headers["x-user-access-token"];
-            var user = await _userService.GetTwitchUser(token);
             var userDto = new TwitchUserDto
             {
-                DisplayName = user.Data.FirstOrDefault()?.DisplayName,
-                Id = user.Data.FirstOrDefault()?.Id,
-                ProfileImageUrl = user.Data.FirstOrDefault()?.ProfileImageUrl,
-                ViewCount = user.Data.FirstOrDefault()?.ViewCount ?? 0
+                DisplayName = User.Identity?.Name,
+                Id = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value,
+                ProfileImageUrl = User.Claims.FirstOrDefault(x => x.Type == TwitchAuthenticationConstants.Claims.ProfileImageUrl)?.Value,
             };
             return Ok(userDto);
+        }
+
+        [HttpGet("login")]
+        public IActionResult Authenticate()
+        {
+            var challenge = Challenge(new AuthenticationProperties
+            {
+                RedirectUri = _twitchConfig.RedirectUrl
+            }, TwitchAuthenticationDefaults.AuthenticationScheme);
+            return challenge;
+        }
+
+        [HttpGet("logout")]
+        public IActionResult LogOut()
+        {
+            return SignOut(new AuthenticationProperties
+            {
+                RedirectUri = _twitchConfig.RedirectUrl
+            }, TwitchAuthenticationDefaults.AuthenticationScheme);
         }
     }
 }

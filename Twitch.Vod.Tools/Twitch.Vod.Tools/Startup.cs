@@ -36,12 +36,27 @@ namespace Twitch.Vod.Tools
             services.AddSingleton<ITwitchUserService>(userService);
             services.AddSingleton<ITwitchVodService>(vodService);
             services.Configure<TwitchConfigurationSection>(Configuration.GetSection("TwitchSettings"));
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("Twitch", config =>
+                {
+                    config.WithOrigins("https://id.twitch.tv/*", "https://twitch.tv/*").AllowAnyMethod();
+                });
+            });
+
             services.AddControllers();
+
             services.AddAuthentication(config =>
                 {
-                    config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    config.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                    config.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     config.DefaultChallengeScheme = TwitchAuthenticationDefaults.AuthenticationScheme;
+                    config.DefaultAuthenticateScheme = TwitchAuthenticationDefaults.AuthenticationScheme;
+                })
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/api/authentication/token";
+                    options.LogoutPath = "/api/authentication/logout";
                 })
                 .AddTwitch(options =>
                 {
@@ -51,7 +66,6 @@ namespace Twitch.Vod.Tools
                     options.Scope.Add("user:read:email");
                     options.Scope.Add("clips:edit");
                     options.Scope.Add("channel:manage:videos");
-                    options.SaveTokens = true;
                 });
             services.AddSpaStaticFiles(options =>
             {
@@ -67,8 +81,11 @@ namespace Twitch.Vod.Tools
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseRouting();
+
+            app.UseCors("Twitch");
+
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
