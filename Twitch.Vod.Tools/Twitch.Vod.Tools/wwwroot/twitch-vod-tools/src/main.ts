@@ -6,7 +6,7 @@ import axios from "axios";
 import { LoginService } from "./services/login.service";
 import Buefy from "buefy";
 import "buefy/dist/buefy.css";
-import "bulma/css/bulma.css";
+import "@/styles/main.scss";
 import "@fortawesome/fontawesome-free/css/all.css";
 import { VodService } from "./services/vod.service";
 

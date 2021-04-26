@@ -1,14 +1,27 @@
 <template>
-  <b-navbar>
+  <b-navbar v-if="twitchUser.id != ''" class="has-background-twitch">
     <template #brand></template>
     <template #end>
       <b-navbar-item tag="div">
         <span class="mr-3">
-          <figure v-if="twitchUser != null" class="image is-24x24">
+          <figure class="image is-24x24">
             <img :src="twitchUser.profileImageUrl" class="is-rounded" />
           </figure>
         </span>
-        <span class="is-5">{{ twitchUser.displayName }}</span>
+        <span>
+          <a
+            class="button is-inverted is-twitch"
+            target="_blank"
+            :href="'https://twitch.tv/' + twitchUser.displayName"
+          >
+            <span class="icon">
+              <i class="fas fa-external-link-alt"></i>
+            </span>
+            <span class="icon-text">
+              {{ twitchUser.displayName }}
+            </span>
+          </a>
+        </span>
       </b-navbar-item>
     </template>
   </b-navbar>

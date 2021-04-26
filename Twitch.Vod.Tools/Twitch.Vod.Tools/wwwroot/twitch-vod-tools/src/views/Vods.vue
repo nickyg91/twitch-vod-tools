@@ -1,5 +1,5 @@
-<style lang="scss" scoped>
-@import "~bulma";
+<style lang="scss">
+@import "~bulma/sass/utilities/derived-variables.sass";
 .vods-container {
   max-height: 1000px;
   overflow: scroll;
@@ -31,18 +31,39 @@
         </div>
         <div class="column is-half">
           <div class="buttons">
-            <button @click="onReloadClicked" class="is-pulled-left button mr-1">
-              Reload
+            <button
+              @click="onReloadClicked"
+              class="is-pulled-left button is-twitch is-outlined mr-1"
+            >
+              <span class="icon">
+                <i class="fas fa-redo"></i>
+              </span>
+              <span class="icon-text">Reload</span>
             </button>
-            <button @click="onGetAllClicked" class="is-warning button mr-1">
-              Get All Vods
+            <button
+              @click="onGetAllClicked"
+              class="is-info button mr-1 is-outlined"
+            >
+              <span class="icon">
+                <i class="fas fa-globe"></i>
+              </span>
+              <span class="icon-text">Get All Vods</span>
             </button>
             <button
               :disabled="isDeleteDisabled"
               @click="selectAllLoadedForDeletion"
-              class="is-danger button mr-1"
+              class="is-danger button mr-1 is-outlined"
             >
-              Delete Selected Vods
+              <span class="icon">
+                <i class="fas fa-trash"></i>
+              </span>
+              <span class="icon-text">Delete Selected Vods</span>
+            </button>
+            <button class="button is-success is-outlined">
+              <span class="icon">
+                <i class="fas fa-check-double"></i>
+              </span>
+              <span class="icon-text">Select Current Vods</span>
             </button>
           </div>
         </div>
@@ -67,7 +88,7 @@
       <button
         v-if="scrollPosition > 100"
         @click="scrollToTop"
-        class="is-floating button is-medium is-primary"
+        class="is-floating button is-medium is-twitch"
       >
         <span class="icon">
           <i class="fas fa-arrow-up"></i>

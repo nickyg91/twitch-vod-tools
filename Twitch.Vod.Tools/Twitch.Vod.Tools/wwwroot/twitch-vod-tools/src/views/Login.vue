@@ -8,9 +8,15 @@
               In order to access this application you must allow it to access
               twitch!
             </p>
+            <p class="subtitle is-4 has-text-centered">
+              This application only accesses your basic user information and
+              permission to manage/view your vods. By clicking allow you agree
+              to this application to usethese permissions and cookies (only used
+              to make sure you are you, I collect zero data.).
+            </p>
             <a
               href="/api/authentication/login"
-              class="is-fullwidth button is-primary"
+              class="is-fullwidth button is-twitch"
             >
               Allow
             </a>
