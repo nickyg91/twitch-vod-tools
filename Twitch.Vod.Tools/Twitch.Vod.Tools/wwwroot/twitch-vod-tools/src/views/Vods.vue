@@ -59,11 +59,14 @@
               </span>
               <span class="icon-text">Delete Selected Vods</span>
             </button>
-            <button class="button is-success is-outlined">
+            <button
+              @click="selectAllCurrent"
+              class="button is-success is-outlined"
+            >
               <span class="icon">
                 <i class="fas fa-check-double"></i>
               </span>
-              <span class="icon-text">Select Current Vods</span>
+              <span class="icon-text">Select All Current Vods</span>
             </button>
           </div>
         </div>
@@ -147,6 +150,11 @@ export default class Vods extends Vue {
   mounted() {
     this.$emit("showLoading");
     this.getVods();
+  }
+
+  selectAllCurrent() {
+    this.vodsForDeletion = [];
+    this.vodsForDeletion.push(...this.vods.map((x) => x.id));
   }
 
   deleteVods() {
