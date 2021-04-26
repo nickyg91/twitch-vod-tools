@@ -1,6 +1,11 @@
 <template>
   <b-navbar v-if="twitchUser.id != ''" class="has-background-twitch">
-    <template #brand></template>
+    <template #brand> </template>
+    <template #start>
+      <b-navbar-item tag="router-link" :to="{ path: '/about' }">
+        About
+      </b-navbar-item>
+    </template>
     <template #end>
       <b-navbar-item tag="div">
         <span class="mr-3">

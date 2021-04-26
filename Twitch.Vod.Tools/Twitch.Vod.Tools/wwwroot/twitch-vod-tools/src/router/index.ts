@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Login from "@/views/Login.vue";
 import Vods from "@/views/Vods.vue";
+import About from "@/views/About.vue";
 import store from "@/store/index";
 import { TwitchUser } from "@/models/twitch-user.model";
 
@@ -20,6 +21,11 @@ const routes: Array<RouteConfig> = [
     path: "/vods",
     name: "Vods",
     component: Vods
+  },
+  {
+    path: "/about",
+    name: "About",
+    component: About
   },
   {
     path: "/authenticated",
