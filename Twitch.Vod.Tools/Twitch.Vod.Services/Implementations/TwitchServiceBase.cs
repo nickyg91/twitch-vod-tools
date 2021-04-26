@@ -54,6 +54,7 @@ namespace Twitch.Vod.Services.Implementations
                 case HttpVerb.PUT:
                     break;
                 case HttpVerb.DELETE:
+                    response = await httpClient.DeleteAsync(url);
                     break;
                 case HttpVerb.PATCH:
                     break;

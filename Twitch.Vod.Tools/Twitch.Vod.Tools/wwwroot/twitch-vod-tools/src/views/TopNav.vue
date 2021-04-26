@@ -4,7 +4,7 @@
     <template #end>
       <b-navbar-item tag="div">
         <span class="mr-3">
-          <figure v-if="twitchUser != null" class="image">
+          <figure v-if="twitchUser != null" class="image is-24x24">
             <img :src="twitchUser.profileImageUrl" class="is-rounded" />
           </figure>
         </span>
@@ -15,9 +15,7 @@
 </template>
 <script lang="ts">
 import { TwitchUser } from "@/models/twitch-user.model";
-import store from "@/store";
 import { Component, Vue, Watch } from "vue-property-decorator";
-//import Vue from "vue";
 import { mapState } from "vuex";
 @Component({
   computed: {
@@ -34,18 +32,4 @@ export default class TopNav extends Vue {
     this.twitchUser = newValue;
   }
 }
-// export default Vue.extend({
-//   store: store,
-//   computed: {
-//     twitchUser: mapState({
-//       get: "twitchUser",
-//       set: "twitchUser"
-//     })
-//   },
-//   watch: {
-//     twitchUser(newValue: TwitchUser) {
-//       this.twitchUser = newValue;
-//     }
-//   }
-// });
 </script>

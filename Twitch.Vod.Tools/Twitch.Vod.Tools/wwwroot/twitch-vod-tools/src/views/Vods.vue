@@ -14,7 +14,7 @@
 }
 
 .marked-for-delete {
-  border-color: $primary;
+  border-color: $danger;
   border-style: solid;
   border-radius: 0.25rem;
   border-width: 3px;
@@ -30,12 +30,21 @@
           </p>
         </div>
         <div class="column is-half">
-          <button
-            @click="onReloadClicked"
-            class="is-pulled-left button is-large"
-          >
-            Reload
-          </button>
+          <div class="buttons">
+            <button @click="onReloadClicked" class="is-pulled-left button mr-1">
+              Reload
+            </button>
+            <button @click="onGetAllClicked" class="is-warning button mr-1">
+              Get All Vods
+            </button>
+            <button
+              :disabled="isDeleteDisabled"
+              @click="selectAllLoadedForDeletion"
+              class="is-danger button mr-1"
+            >
+              Delete Selected Vods
+            </button>
+          </div>
         </div>
       </div>
       <hr />
@@ -55,6 +64,15 @@
           ></vod>
         </div>
       </div>
+      <button
+        v-if="scrollPosition > 100"
+        @click="scrollToTop"
+        class="is-floating button is-medium is-primary"
+      >
+        <span class="icon">
+          <i class="fas fa-arrow-up"></i>
+        </span>
+      </button>
     </div>
   </div>
 </template>
@@ -76,8 +94,13 @@ export default class Vods extends Vue {
   vodCount = 0;
   cursor = "";
   vodsForDeletion: number[] = [];
-  mounted() {
-    this.$emit("showLoading");
+  scrollPosition = 0;
+
+  get isDeleteDisabled(): boolean {
+    return this.vodsForDeletion.length < 1;
+  }
+
+  private getVods() {
     this.$vodService
       .getVods((this.$store.getters.getTwitchUser as TwitchUser).id)
       .then(
@@ -95,12 +118,94 @@ export default class Vods extends Vue {
             type: "is-danger"
           });
           this.$emit("hideLoading");
+          console.error(error);
         }
       );
   }
 
+  mounted() {
+    this.$emit("showLoading");
+    this.getVods();
+  }
+
+  deleteVods() {
+    this.$buefy.dialog.confirm({
+      message:
+        "Are you sure you want to delete these vods? This action is permanent.",
+      title: "Delete?",
+      onConfirm: () => {
+        this.$emit("showLoading");
+        this.$vodService
+          .deleteVods(this.vodsForDeletion)
+          .then(
+            (result) => {
+              return result.data;
+            },
+            (error) => {
+              this.$buefy.toast.open({
+                message:
+                  "An error occurred while deleting Vods. Please try again.",
+                type: "is-danger"
+              });
+              this.$emit("hideLoading");
+              console.error(error);
+            }
+          )
+          .then((result) => this.getVods());
+      }
+    });
+  }
+
+  selectAllLoadedForDeletion() {
+    this.vodsForDeletion = this.vods.map((x) => x.id);
+  }
+
+  scrollToTop() {
+    document
+      .getElementsByClassName("vods-container")[0]
+      .scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  onGetAllClicked() {
+    this.$buefy.dialog.confirm({
+      message:
+        "Are you sure you want to get all your vods? This make take a hot minute if you have a lot.",
+      title: "Are you sure you want to get 'em all?",
+      onConfirm: () => {
+        this.$emit("showLoading");
+        this.vodCount = 0;
+        this.$vodService
+          .getVods(
+            (this.$store.getters.getTwitchUser as TwitchUser).id,
+            undefined,
+            true
+          )
+          .then(
+            (result) => {
+              this.$emit("hideLoading");
+              this.cursor = "";
+              this.vods = result.data.vods;
+              this.vodCount += this.vods.length;
+            },
+            (error) => {
+              this.$buefy.toast.open({
+                message:
+                  "An error occurred while getting Vods. Please try again.",
+                type: "is-danger"
+              });
+              this.$emit("hideLoading");
+              console.error(error);
+            }
+          );
+      }
+    });
+  }
+
   onReloadClicked() {
     this.vodCount = 0;
+    document
+      .getElementsByClassName("vods-container")[0]
+      .scrollTo({ top: -100, behavior: "smooth" });
     this.$vodService
       .getVods((this.$store.getters.getTwitchUser as TwitchUser).id)
       .then(
@@ -118,18 +223,19 @@ export default class Vods extends Vue {
             type: "is-danger"
           });
           this.$emit("hideLoading");
+          console.error(error);
         }
       );
   }
 
   addForDeletion(id?: number) {
     if (id) {
-      const isContained = this.vodsForDeletion.find((x) => x === id);
+      const isContained = this.vodsForDeletion?.find((x) => x === id);
       if (isContained) {
-        const idx = this.vodsForDeletion.indexOf(id);
-        this.vodsForDeletion.splice(idx, 1);
+        const idx = this.vodsForDeletion?.indexOf(id);
+        this.vodsForDeletion?.splice(idx, 1);
       } else {
-        this.vodsForDeletion.push(id);
+        this.vodsForDeletion?.push(id);
       }
     }
   }
@@ -137,6 +243,10 @@ export default class Vods extends Vue {
   @Debounce(250)
   onScroll(event: Event) {
     const element = event.target as HTMLElement;
+    this.scrollPosition = element.scrollTop;
+    if (this.cursor === "") {
+      return;
+    }
     if (
       element.offsetHeight + element.scrollTop >= element.scrollHeight &&
       this.cursor.length > 0
@@ -149,10 +259,8 @@ export default class Vods extends Vue {
         )
         .then(
           (result) => {
-            this.vods.push(
-              ...result.data.vods.slice(1, result.data.vods.length)
-            );
-            this.vodCount += result.data.vods.length - 1;
+            this.vods.push(...result.data.vods);
+            this.vodCount += result.data.vods.length;
             this.cursor = result.data.pagination?.cursor ?? "";
             this.$emit("hideLoading");
           },
@@ -163,6 +271,7 @@ export default class Vods extends Vue {
               type: "is-danger"
             });
             this.$emit("hideLoading");
+            console.error(error);
           }
         );
     }
@@ -170,7 +279,7 @@ export default class Vods extends Vue {
 
   isVodMarkedForDeletion(id?: number): boolean {
     if (id) {
-      return this.vodsForDeletion.indexOf(id) > -1;
+      return this.vodsForDeletion?.indexOf(id) > -1;
     }
     return false;
   }

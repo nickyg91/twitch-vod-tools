@@ -1,8 +1,8 @@
 using AspNet.Security.OAuth.Twitch;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -57,12 +57,14 @@ namespace Twitch.Vod.Tools
                 {
                     options.LoginPath = "/api/authentication/token";
                     options.LogoutPath = "/api/authentication/logout";
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.SameSite = SameSiteMode.None;
                 })
                 .AddTwitch(options =>
                 {
+                    //options.CallbackPath = "/authenticated";
                     options.ClientId = section.ClientId;
                     options.ClientSecret = section.ClientSecret;
-                    options.ReturnUrlParameter = section.RedirectUrl;
                     options.Scope.Add("user:read:email");
                     options.Scope.Add("clips:edit");
                     options.Scope.Add("channel:manage:videos");
@@ -81,7 +83,7 @@ namespace Twitch.Vod.Tools
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseRouting();
 
             app.UseCors("Twitch");

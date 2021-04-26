@@ -62,7 +62,6 @@ namespace Twitch.Vod.Tools.Controllers
         {
             return SignOut(new AuthenticationProperties
             {
-                RedirectUri = _twitchConfig.RedirectUrl
             }, TwitchAuthenticationDefaults.AuthenticationScheme);
         }
     }

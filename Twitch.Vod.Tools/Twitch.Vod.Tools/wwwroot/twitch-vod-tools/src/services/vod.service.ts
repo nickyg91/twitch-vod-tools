@@ -9,11 +9,23 @@ export class VodService {
 
   getVods(
     userId: string,
-    cursor?: string
+    cursor?: string,
+    getAll = false
   ): Promise<AxiosResponse<TwitchVodContainer>> {
-    if (cursor !== undefined) {
-      return this.httpClient.get(`/api/vod/${userId}?pagination=${cursor}`);
+    if (getAll) {
+      return this.httpClient.get<TwitchVodContainer>(
+        `/api/vod/${userId}?getAll=true`
+      );
     }
-    return this.httpClient.get(`/api/vod/${userId}`);
+    if (cursor !== undefined) {
+      return this.httpClient.get<TwitchVodContainer>(
+        `/api/vod/${userId}?pagination=${cursor}`
+      );
+    }
+    return this.httpClient.get<TwitchVodContainer>(`/api/vod/${userId}`);
+  }
+
+  deleteVods(ids: number[]) {
+    return this.httpClient.post<number[]>("/api/vod/delete", ids);
   }
 }
