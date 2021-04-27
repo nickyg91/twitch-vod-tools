@@ -24,26 +24,23 @@
   <div class="section">
     <div class="container">
       <div class="columns">
-        <div class="column is-half">
-          <p class="mt-3 is-pulled-right subtitle is-4">
+        <div class="column is-one-third">
+          <p class="mt-3 is-justify-content-left subtitle is-4">
             Total Vods Loaded: {{ this.vodCount }}
           </p>
         </div>
-        <div class="column is-half">
-          <div class="buttons">
+        <div class="column is-justify-content-right is-two-thirds">
+          <div class="is-right buttons">
             <button
               @click="onReloadClicked"
-              class="is-pulled-left button is-twitch is-outlined mr-1"
+              class="button is-twitch is-outlined"
             >
               <span class="icon">
                 <i class="fas fa-redo"></i>
               </span>
               <span class="icon-text">Reload</span>
             </button>
-            <button
-              @click="onGetAllClicked"
-              class="is-info button mr-1 is-outlined"
-            >
+            <button @click="onGetAllClicked" class="is-info button is-outlined">
               <span class="icon">
                 <i class="fas fa-globe"></i>
               </span>
@@ -52,7 +49,7 @@
             <button
               :disabled="isDeleteDisabled"
               @click="selectAllLoadedForDeletion"
-              class="is-danger button mr-1 is-outlined"
+              class="is-danger button is-outlined"
             >
               <span class="icon">
                 <i class="fas fa-trash"></i>

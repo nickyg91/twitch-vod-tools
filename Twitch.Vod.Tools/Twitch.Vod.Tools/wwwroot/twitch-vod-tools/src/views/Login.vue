@@ -12,7 +12,7 @@
               This application only accesses your basic user information and
               permission to manage/view your vods. By clicking allow you agree
               to this application to use these permissions and cookies (only
-              used to make sure you are you, I collect zero data).
+              used to make sure you are you. I collect zero data).
             </p>
             <a
               href="/api/authentication/login"

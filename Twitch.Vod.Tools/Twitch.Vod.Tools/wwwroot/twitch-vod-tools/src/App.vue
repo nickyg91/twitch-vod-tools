@@ -34,10 +34,38 @@ $scheme-invert: hsl(0, 0%, 4%);
 <template>
   <div>
     <top-nav></top-nav>
-    <router-view
-      @showLoading="showLoading"
-      @hideLoading="hideLoading"
-    ></router-view>
+    <div v-if="twitchUser.id != ''" class="section">
+      <div class="container">
+        <div class="tabs is-centered is-large mt-5">
+          <ul>
+            <router-link
+              :class="{ 'is-active': getCurrentRoute === 'Vods' }"
+              tag="li"
+              :to="{ name: 'Vods' }"
+              exact
+              ><a>Vods</a></router-link
+            >
+            <router-link
+              :class="{ 'is-active': getCurrentRoute === 'About' }"
+              tag="li"
+              :to="{ name: 'About' }"
+              exact
+              ><a>About</a></router-link
+            >
+          </ul>
+        </div>
+      </div>
+    </div>
+    <transition
+      enter-active-class="animate__animated animate__bounceInLeft"
+      leave-active-class="animate__animated animate__bounceOutRight"
+      mode="out-in"
+    >
+      <router-view
+        @showLoading="showLoading"
+        @hideLoading="hideLoading"
+      ></router-view>
+    </transition>
     <b-loading v-model="isLoading" :can-cancel="false"></b-loading>
   </div>
 </template>
@@ -46,6 +74,7 @@ $scheme-invert: hsl(0, 0%, 4%);
 import Vue from "vue";
 import TopNav from "@/views/TopNav.vue";
 import store from "./store";
+import { mapState } from "vuex";
 export default Vue.extend({
   name: "App",
   components: {
@@ -56,12 +85,18 @@ export default Vue.extend({
       isLoading: false
     };
   },
+  computed: {
+    getCurrentRoute() {
+      return this.$route.name;
+    },
+    ...mapState(["twitchUser"])
+  },
   methods: {
     showLoading() {
-      this.isLoading = true;
+      this.$data.isLoading = true;
     },
     hideLoading() {
-      this.isLoading = false;
+      this.$data.isLoading = false;
     }
   },
   store: store

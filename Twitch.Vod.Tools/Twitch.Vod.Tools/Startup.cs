@@ -22,8 +22,9 @@ namespace Twitch.Vod.Tools
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+            Environment = env;
         }
-
+        public IWebHostEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -43,6 +44,13 @@ namespace Twitch.Vod.Tools
                 {
                     config.WithOrigins("https://id.twitch.tv/*", "https://twitch.tv/*").AllowAnyMethod();
                 });
+                if (Environment.IsDevelopment())
+                {
+                   options.AddPolicy("Development", config =>
+                   {
+                       config.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                   });
+                }
             });
 
             services.AddControllers();
@@ -82,8 +90,8 @@ namespace Twitch.Vod.Tools
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseHttpsRedirection();
+            
+            //app.UseHttpsRedirection();
             app.UseRouting();
 
             app.UseCors("Twitch");
