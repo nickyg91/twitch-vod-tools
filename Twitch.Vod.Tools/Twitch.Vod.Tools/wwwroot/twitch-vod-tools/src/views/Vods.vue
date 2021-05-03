@@ -48,7 +48,7 @@
             </button>
             <button
               :disabled="isDeleteDisabled"
-              @click="selectAllLoadedForDeletion"
+              @click="deleteVods"
               class="is-danger button is-outlined"
             >
               <span class="icon">

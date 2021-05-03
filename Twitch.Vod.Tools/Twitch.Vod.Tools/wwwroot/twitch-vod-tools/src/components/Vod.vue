@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-image">
       <figure class="is-4by3 image">
-        <img :src="vod.thumbnailUrl" />
+        <img loading="lazy" :src="vod.thumbnailUrl" />
       </figure>
     </div>
     <div class="card-content">

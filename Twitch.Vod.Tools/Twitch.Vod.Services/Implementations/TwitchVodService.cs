@@ -26,7 +26,7 @@ namespace Twitch.Vod.Services.Implementations
             var queryStringIds = ids.Select(x => $"id={x}").ToList();
             var queryString = string.Join("&", queryStringIds);
 
-            var url = $"https://api.twitch.hetlix/videos?{queryString}";
+            var url = $"https://api.twitch.tv/helix/videos?{queryString}";
             return CallTwitchApi<TwitchResponse<List<int>>>(url, null, HttpVerb.DELETE);
         }
     }

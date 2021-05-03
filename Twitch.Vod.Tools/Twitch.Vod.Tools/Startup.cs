@@ -1,11 +1,16 @@
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using AspNet.Security.OAuth.Twitch;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Twitch.Vod.Services.Configuration;
 using Twitch.Vod.Services.Implementations;
 using Twitch.Vod.Services.Interfaces;
@@ -54,33 +59,51 @@ namespace Twitch.Vod.Tools
             });
 
             services.AddControllers();
-
             services.AddAuthentication(config =>
+            {
+                config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(config =>
+            {
+                config.Configuration.Issuer = "https://twitch.tv";
+                //config.Configuration.
+                config.TokenValidationParameters = new TokenValidationParameters
                 {
-                    config.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    config.DefaultChallengeScheme = TwitchAuthenticationDefaults.AuthenticationScheme;
-                    config.DefaultAuthenticateScheme = TwitchAuthenticationDefaults.AuthenticationScheme;
-                })
-                .AddCookie(options =>
-                {
-                    options.LoginPath = "/api/authentication/token";
-                    options.LogoutPath = "/api/authentication/logout";
-                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                    options.Cookie.SameSite = SameSiteMode.None;
-                })
-                .AddTwitch(options =>
-                {
-                    //options.CallbackPath = "/authenticated";
-                    options.ClientId = section.ClientId;
-                    options.ClientSecret = section.ClientSecret;
-                    options.Scope.Add("user:read:email");
-                    options.Scope.Add("clips:edit");
-                    options.Scope.Add("channel:manage:videos");
-                });
+                    IssuerValidator = IssuerValidator,
+                };
+            });
+            //services.AddAuthentication(config =>
+            //    {
+            //        config.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //        config.DefaultChallengeScheme = TwitchAuthenticationDefaults.AuthenticationScheme;
+            //        config.DefaultAuthenticateScheme = TwitchAuthenticationDefaults.AuthenticationScheme;
+            //    })
+            //    .AddCookie(options =>
+            //    {
+            //        options.LoginPath = "/api/authentication/token";
+            //        options.LogoutPath = "/api/authentication/logout";
+            //        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            //        options.Cookie.SameSite = SameSiteMode.None;
+            //    })
+            //    .AddTwitch(options =>
+            //    {
+            //        //options.CallbackPath = "/authenticated";
+            //        options.ClientId = section.ClientId;
+            //        options.ClientSecret = section.ClientSecret;
+            //        options.Scope.Add("user:read:email");
+            //        options.Scope.Add("clips:edit");
+            //        options.Scope.Add("channel:manage:videos");
+            //    });
             services.AddSpaStaticFiles(options =>
             {
                 options.RootPath = "wwwroot/twitch-vod-tools/dist";
             });
+        }
+
+        private string IssuerValidator(string issuer, SecurityToken securitytoken, TokenValidationParameters validationparameters)
+        {
+            using var httpClient = new HttpClient {BaseAddress = new Uri("https://id.twitch.tv/oauth2/validate")};
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -95,7 +118,6 @@ namespace Twitch.Vod.Tools
             app.UseRouting();
 
             app.UseCors("Twitch");
-
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

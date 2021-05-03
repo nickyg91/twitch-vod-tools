@@ -22,7 +22,6 @@
     </ItemGroup>
   </Target>
   <ItemGroup>
-    <PackageReference Include="AspNet.Security.OAuth.Twitch" Version="5.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="5.0.0-preview.1.20124.5" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.5" />

@@ -40,18 +40,24 @@ $scheme-invert: hsl(0, 0%, 4%);
           <ul>
             <router-link
               :class="{ 'is-active': getCurrentRoute === 'Vods' }"
-              tag="li"
+              custom
               :to="{ name: 'Vods' }"
               exact
-              ><a>Vods</a></router-link
+              v-slot="{ navigate }"
             >
+              <li>
+                <a @click="navigate">Vods</a>
+              </li>
+            </router-link>
             <router-link
               :class="{ 'is-active': getCurrentRoute === 'About' }"
-              tag="li"
+              v-slot="{ navigate }"
+              custom
               :to="{ name: 'About' }"
               exact
-              ><a>About</a></router-link
             >
+              <li @click="navigate"><a>About</a></li>
+            </router-link>
           </ul>
         </div>
       </div>
