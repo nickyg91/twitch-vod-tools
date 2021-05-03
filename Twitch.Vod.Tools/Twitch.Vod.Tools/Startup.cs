@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using Twitch.Vod.Services.Configuration;
 using Twitch.Vod.Services.Implementations;
 using Twitch.Vod.Services.Interfaces;
+using Twitch.Vod.Tools.Middleware;
 
 namespace Twitch.Vod.Tools
 {
@@ -59,19 +60,7 @@ namespace Twitch.Vod.Tools
             });
 
             services.AddControllers();
-            services.AddAuthentication(config =>
-            {
-                config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(config =>
-            {
-                config.Configuration.Issuer = "https://twitch.tv";
-                //config.Configuration.
-                config.TokenValidationParameters = new TokenValidationParameters
-                {
-                    IssuerValidator = IssuerValidator,
-                };
-            });
+            services.AddAuthentication();
             //services.AddAuthentication(config =>
             //    {
             //        config.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -100,12 +89,6 @@ namespace Twitch.Vod.Tools
             });
         }
 
-        private string IssuerValidator(string issuer, SecurityToken securitytoken, TokenValidationParameters validationparameters)
-        {
-            using var httpClient = new HttpClient {BaseAddress = new Uri("https://id.twitch.tv/oauth2/validate")};
-
-        }
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -119,7 +102,7 @@ namespace Twitch.Vod.Tools
 
             app.UseCors("Twitch");
             app.UseAuthentication();
-            app.UseAuthorization();
+            app.UseCustomAuthorizationMiddleware();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
